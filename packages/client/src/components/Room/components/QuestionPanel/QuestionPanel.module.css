@@ -1,0 +1,67 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.turnBadge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.myTurn {
+  color: var(--color-success);
+}
+
+.askForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.askForm input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.pendingQuestion {
+  background: var(--color-bg);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.95rem;
+}
+
+.answerButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
+
+.guessRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+}
+
+.guessHint {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+

@@ -1,0 +1,16 @@
+{
+  "name": "guess-table",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run build --workspace=@guess-table/shared && concurrently -n shared,server,client -c yellow,green,cyan \"npm run dev --workspace=@guess-table/shared\" \"npm run dev --workspace=@guess-table/server\" \"npm run dev --workspace=@guess-table/client\"",
+    "build": "npm run build --workspace=@guess-table/shared && npm run build --workspace=@guess-table/client && npm run build --workspace=@guess-table/server",
+    "start": "npm run start --workspace=@guess-table/server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

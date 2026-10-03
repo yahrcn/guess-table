@@ -1,0 +1,82 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+  position: relative;
+  text-align: center;
+}
+
+.card:hover:not(.disabled) {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.card.disabled {
+  cursor: default;
+}
+
+.avatarWrap {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: calc(var(--radius) - 4px);
+  overflow: hidden;
+}
+
+.avatarWrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+.excluded {
+  opacity: 0.35;
+}
+
+.crossOverlay {
+  position: absolute;
+  inset: 6px;
+  pointer-events: none;
+}
+
+.crossOverlay::before,
+.crossOverlay::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  height: 3px;
+  background: var(--color-danger);
+  opacity: 0.85;
+}
+
+.crossOverlay::before {
+  transform: rotate(18deg);
+}
+
+.crossOverlay::after {
+  transform: rotate(-18deg);
+}
+
+.selected {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.25);
+}
+
+.guessTarget:hover:not(.disabled) {
+  border-color: var(--color-danger);
+}

@@ -1,0 +1,55 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+}
+
+.players {
+  display: flex;
+  gap: 18px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.turn {
+  color: var(--color-accent);
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+}
+
+.online {
+  background: var(--color-success);
+}
+
+.you {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copied {
+  font-size: 0.8rem;
+  color: var(--color-success);
+}

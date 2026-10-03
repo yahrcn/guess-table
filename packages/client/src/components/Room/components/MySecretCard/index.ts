@@ -1,0 +1,1 @@
+export { MySecretCard } from './MySecretCard';
