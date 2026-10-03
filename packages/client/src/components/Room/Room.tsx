@@ -92,7 +92,7 @@ export const Room = ({ roomId }: Props) => {
             onChange={(event) => setNameInput(event.target.value)}
             maxLength={30}
           />
-          <Button type="submit" disabled={!nameInput.trim() || joinStatus === AsyncStatus.Pending}>
+          <Button type="submit" disabled={!nameInput.trim()}>
             Войти
           </Button>
         </form>
