@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,14 +25,19 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
-if (isProduction) {
-  const clientDist = path.resolve(__dirname, '../../client/dist');
-  app.use(express.static(clientDist));
+// Keyed on the build actually being present on disk rather than NODE_ENV — some hosts
+// don't propagate configured env vars to the running process the way you'd expect, and
+// this is the one thing that must not silently no-op when that happens.
+const clientIndexHtml = path.resolve(__dirname, '../../client/dist/index.html');
+const hasClientBuild = existsSync(clientIndexHtml);
+if (hasClientBuild) {
+  app.use(express.static(path.dirname(clientIndexHtml)));
   app.get('*', (_req, res) => {
-    res.sendFile(path.join(clientDist, 'index.html'));
+    res.sendFile(clientIndexHtml);
   });
 }
 
 httpServer.listen(PORT, () => {
   console.log(`Guess-table server listening on port ${PORT} (${isProduction ? 'production' : 'development'})`);
+  console.log(hasClientBuild ? `Serving client build from ${path.dirname(clientIndexHtml)}` : 'Client build not found — serving API/WebSocket only.');
 });
