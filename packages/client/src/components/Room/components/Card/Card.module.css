@@ -80,3 +80,15 @@
 .guessTarget:hover:not(.disabled) {
   border-color: var(--color-danger);
 }
+
+@media (max-width: 480px) {
+  .card {
+    gap: 3px;
+    padding: 3px;
+    border-radius: calc(var(--radius) - 4px);
+  }
+
+  .name {
+    font-size: 0.66rem;
+  }
+}

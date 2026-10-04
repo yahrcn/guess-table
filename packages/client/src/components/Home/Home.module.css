@@ -80,3 +80,13 @@
   color: var(--color-danger);
   font-size: 0.85rem;
 }
+
+@media (max-width: 480px) {
+  .page {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+}
