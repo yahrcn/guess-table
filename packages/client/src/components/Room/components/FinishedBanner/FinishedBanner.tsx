@@ -57,7 +57,7 @@ export const FinishedBanner = ({
             if (!card) return null;
             return (
               <div key={player.id} className={styles.secretCol}>
-                <DeckAvatar deckId={deckId} seed={card.seed} size={64} title={card.displayName} />
+                <DeckAvatar deckId={deckId} cardId={card.id} size={64} title={card.displayName} />
                 <span>
                   {player.name}: {card.displayName}
                 </span>

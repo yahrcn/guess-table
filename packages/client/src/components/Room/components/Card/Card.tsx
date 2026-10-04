@@ -28,7 +28,7 @@ export const Card = ({ card, deckId, excluded, selected, disabled, guessMode, on
       aria-pressed={selected}
     >
       <span className={styles.avatarWrap}>
-        <DeckAvatar deckId={deckId} seed={card.seed} title={card.displayName} />
+        <DeckAvatar deckId={deckId} cardId={card.id} title={card.displayName} />
       </span>
       <span className={styles.name}>{card.displayName}</span>
       {excluded && <span className={styles.crossOverlay} aria-hidden="true" />}

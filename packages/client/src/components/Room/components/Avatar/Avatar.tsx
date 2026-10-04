@@ -1,27 +1,19 @@
-import { hashSeed } from '../avatarHash';
-
-const BG_COLORS = ['#F4A261', '#2A9D8F', '#E76F51', '#577590', '#E9C46A', '#8AB17D', '#B388EB', '#FF8FA3', '#4CC9F0', '#FFB4A2'];
-const HAIR_COLORS = ['#2B2118', '#4A2C2A', '#7A4E2D', '#C9A66B', '#1C1C1C', '#8D5B4C', '#D1A3A4'];
-const SKIN_COLORS = ['#FFE0BD', '#F1C27D', '#E0AC69', '#C68642', '#8D5524', '#FFDAB9'];
+import { getPersonDesign } from './personDesigns';
+import { renderBadge } from './badges';
 
 interface Props {
-  seed: string;
+  cardId: string;
   size?: number;
   title?: string;
 }
 
 /**
- * Deterministic, fictional SVG portrait generated from `seed` — no external images,
- * so the card deck needs no licensed photos. Same seed always renders the same face.
+ * Person-face SVG rendered from a hand-chosen design per card id (see personDesigns.ts) —
+ * nothing here is derived from hashing a seed. The optional corner badge ties the face to
+ * its specific role (stethoscope for a doctor, flask for a scientist, etc).
  */
-export const Avatar = ({ seed, size = 96, title }: Props) => {
-  const hash = hashSeed(seed);
-  const bg = BG_COLORS[hash % BG_COLORS.length];
-  const skin = SKIN_COLORS[Math.floor(hash / 7) % SKIN_COLORS.length];
-  const hair = HAIR_COLORS[Math.floor(hash / 49) % HAIR_COLORS.length];
-  const hairStyle = Math.floor(hash / 343) % 4;
-  const hasGlasses = Math.floor(hash / 2401) % 3 === 0;
-  const mouthUp = Math.floor(hash / 16807) % 2 === 0;
+export const Avatar = ({ cardId, size = 96, title }: Props) => {
+  const { bg, skin, hair, hairStyle, hasGlasses, mouthUp, badge } = getPersonDesign(cardId);
 
   return (
     <svg viewBox="0 0 100 100" width={size} height={size} role="img" aria-label={title ?? 'Сгенерированный портрет'}>
@@ -52,6 +44,12 @@ export const Avatar = ({ seed, size = 96, title }: Props) => {
         <path d="M42 58 Q50 64 58 58" stroke="#8a4a3a" strokeWidth="2.4" fill="none" strokeLinecap="round" />
       ) : (
         <line x1="43" y1="59" x2="57" y2="59" stroke="#8a4a3a" strokeWidth="2.4" strokeLinecap="round" />
+      )}
+      {badge && (
+        <g>
+          <circle cx="78" cy="80" r="16" fill="#ffffff" stroke="#2b2118" strokeWidth="1.5" />
+          {renderBadge(badge, 78, 80)}
+        </g>
       )}
     </svg>
   );

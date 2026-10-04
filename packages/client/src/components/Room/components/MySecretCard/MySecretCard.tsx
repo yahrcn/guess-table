@@ -14,7 +14,7 @@ export const MySecretCard = ({ deckId, cardId }: Props) => {
   return (
     <div className={styles.badge}>
       <span className={styles.avatarWrap}>
-        <DeckAvatar deckId={deckId} seed={card.seed} title={card.displayName} />
+        <DeckAvatar deckId={deckId} cardId={card.id} title={card.displayName} />
       </span>
       <div>
         <div className={styles.label}>Ваша карточка</div>

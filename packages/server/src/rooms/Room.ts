@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  BOARD_SIZE,
   DEFAULT_DECK_ID,
   ERROR_CODES,
   Phase,
@@ -58,7 +59,12 @@ export class Room {
 
   constructor(id: string) {
     this.id = id;
-    this.boardOrder = shuffle(getDeckCards(this.deckId).map((c) => c.id));
+    this.boardOrder = this.drawBoardOrder();
+  }
+
+  /** 25 cards drawn at random out of the chosen deck's full 50. */
+  private drawBoardOrder(): string[] {
+    return shuffle(getDeckCards(this.deckId).map((c) => c.id)).slice(0, BOARD_SIZE);
   }
 
   private touch() {
@@ -133,7 +139,7 @@ export class Room {
       return { ok: false, error: err(ERROR_CODES.INVALID_DECK, 'Такого набора карточек не существует.') };
     }
     this.deckId = deckId;
-    this.boardOrder = shuffle(getDeckCards(this.deckId).map((c) => c.id));
+    this.boardOrder = this.drawBoardOrder();
     return { ok: true, data: null };
   }
 
@@ -156,7 +162,7 @@ export class Room {
     if (player.secretCardId) {
       return { ok: false, error: err(ERROR_CODES.ALREADY_SELECTED, 'Вы уже выбрали карточку.') };
     }
-    if (!getDeckCards(this.deckId).some((c) => c.id === cardId)) {
+    if (!this.boardOrder.includes(cardId)) {
       return { ok: false, error: err(ERROR_CODES.INVALID_CARD, 'Такой карточки нет на поле.') };
     }
     player.secretCardId = cardId;
@@ -228,7 +234,7 @@ export class Room {
     if (this.pendingQuestion) {
       return { ok: false, error: err(ERROR_CODES.INVALID_PHASE, 'Дождитесь ответа на предыдущий вопрос.') };
     }
-    if (!getDeckCards(this.deckId).some((c) => c.id === cardId)) {
+    if (!this.boardOrder.includes(cardId)) {
       return { ok: false, error: err(ERROR_CODES.INVALID_CARD, 'Такой карточки нет на поле.') };
     }
     const opponent = this.players.find((p) => p.id !== playerId);
@@ -270,7 +276,7 @@ export class Room {
   }
 
   private resetForRematch(): void {
-    this.boardOrder = shuffle(getDeckCards(this.deckId).map((c) => c.id));
+    this.boardOrder = this.drawBoardOrder();
     for (const p of this.players) {
       p.secretCardId = null;
     }

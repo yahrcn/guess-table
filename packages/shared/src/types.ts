@@ -17,7 +17,6 @@ export enum DeckId {
 export interface Card {
   id: string;
   displayName: string;
-  seed: string;
 }
 
 export interface PlayerView {
