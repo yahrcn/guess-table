@@ -1,4 +1,4 @@
-import type { ErrorPayload, JoinSuccess, RoomSnapshot } from './types.js';
+import type { DeckId, ErrorPayload, JoinSuccess, RoomSnapshot } from './types.js';
 
 export interface AckOk<T> {
   ok: true;
@@ -38,6 +38,10 @@ export interface ClientToServerEvents {
     cb: (ack: Ack<{ correct: boolean }>) => void
   ) => void;
   'game:rematchBegin': (cb: (ack: Ack<null>) => void) => void;
+  'game:selectDeck': (
+    payload: { deckId: DeckId },
+    cb: (ack: Ack<null>) => void
+  ) => void;
 }
 
 export interface ServerToClientEvents {
@@ -57,4 +61,6 @@ export const ERROR_CODES = {
   ALREADY_SELECTED: 'ALREADY_SELECTED',
   NO_PENDING_QUESTION: 'NO_PENDING_QUESTION',
   EMPTY_QUESTION: 'EMPTY_QUESTION',
+  NOT_HOST: 'NOT_HOST',
+  INVALID_DECK: 'INVALID_DECK',
 } as const;

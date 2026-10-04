@@ -1,15 +1,8 @@
+import { hashSeed } from '../avatarHash';
+
 const BG_COLORS = ['#F4A261', '#2A9D8F', '#E76F51', '#577590', '#E9C46A', '#8AB17D', '#B388EB', '#FF8FA3', '#4CC9F0', '#FFB4A2'];
 const HAIR_COLORS = ['#2B2118', '#4A2C2A', '#7A4E2D', '#C9A66B', '#1C1C1C', '#8D5B4C', '#D1A3A4'];
 const SKIN_COLORS = ['#FFE0BD', '#F1C27D', '#E0AC69', '#C68642', '#8D5524', '#FFDAB9'];
-
-function hashSeed(seed: string): number {
-  let hash = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    hash ^= seed.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return Math.abs(hash);
-}
 
 interface Props {
   seed: string;

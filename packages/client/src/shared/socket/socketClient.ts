@@ -2,6 +2,7 @@ import { io, type Socket } from 'socket.io-client';
 import type {
   Ack,
   ClientToServerEvents,
+  DeckId,
   JoinSuccess,
   ServerToClientEvents,
 } from '@guess-table/shared';
@@ -59,5 +60,11 @@ export function finalGuess(cardId: string): Promise<Ack<{ correct: boolean }>> {
 export function rematchBegin(): Promise<Ack<null>> {
   return new Promise((resolve) => {
     getSocket().emit('game:rematchBegin', resolve);
+  });
+}
+
+export function selectDeck(deckId: DeckId): Promise<Ack<null>> {
+  return new Promise((resolve) => {
+    getSocket().emit('game:selectDeck', { deckId }, resolve);
   });
 }

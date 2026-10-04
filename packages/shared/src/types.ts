@@ -5,6 +5,15 @@ export enum Phase {
   Finished = 'finished',
 }
 
+export enum DeckId {
+  Fictional = 'fictional',
+  Celebrities = 'celebrities',
+  Animals = 'animals',
+  Professions = 'professions',
+  Movies = 'movies',
+  VideoGames = 'videoGames',
+}
+
 export interface Card {
   id: string;
   displayName: string;
@@ -29,6 +38,7 @@ export interface QuestionEntry {
 export interface RoomSnapshot {
   roomId: string;
   phase: Phase;
+  deckId: DeckId;
   players: PlayerView[];
   boardOrder: string[];
   currentTurnPlayerId: string | null;

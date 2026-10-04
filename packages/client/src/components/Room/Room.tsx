@@ -5,6 +5,7 @@ import { loadPlayerName, loadSession } from '../../shared/helpers/storageHelpers
 import { AsyncStatus } from '../../shared/types';
 import { Button } from '../../shared/components/Button';
 import { Board } from './components/Board';
+import { DeckPicker } from './components/DeckPicker';
 import { FinishedBanner } from './components/FinishedBanner';
 import { MySecretCard } from './components/MySecretCard';
 import { PlayersHeader } from './components/PlayersHeader';
@@ -125,10 +126,13 @@ export const Room = ({ roomId }: Props) => {
         showTurn={snapshot.phase === Phase.Playing}
       />
 
-      {snapshot.mySecretCardId && <MySecretCard cardId={snapshot.mySecretCardId} />}
+      {snapshot.mySecretCardId && <MySecretCard deckId={snapshot.deckId} cardId={snapshot.mySecretCardId} />}
 
       {waitingForOpponent && (
-        <div className={styles.notice}>Ожидаем второго игрока — поделитесь ссылкой на комнату.</div>
+        <>
+          <div className={styles.notice}>Ожидаем второго игрока — поделитесь ссылкой на комнату.</div>
+          <DeckPicker selectedDeckId={snapshot.deckId} isSubmitting={isSubmitting} />
+        </>
       )}
 
       {selectingPhase && (
@@ -140,6 +144,7 @@ export const Room = ({ roomId }: Props) => {
 
       {snapshot.phase === Phase.Finished && (
         <FinishedBanner
+          deckId={snapshot.deckId}
           winnerId={snapshot.winnerId}
           revealedSecrets={snapshot.revealedSecrets}
           players={snapshot.players}
@@ -152,6 +157,7 @@ export const Room = ({ roomId }: Props) => {
 
       <div className={styles.layout}>
         <Board
+          deckId={snapshot.deckId}
           boardOrder={snapshot.boardOrder}
           excludedCardIds={excludedCardIds}
           ruledOutCardIds={ruledOutCardIds}

@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
-import { CARD_DECK } from '@guess-table/shared';
+import { getDeckCards, type DeckId } from '@guess-table/shared';
 import { Card } from '../Card';
 import styles from './Board.module.css';
 
-const CARD_BY_ID = new Map(CARD_DECK.map((card) => [card.id, card]));
-
 interface Props {
+  deckId: DeckId;
   boardOrder: string[];
   excludedCardIds: string[];
   ruledOutCardIds: string[];
@@ -16,6 +15,7 @@ interface Props {
 }
 
 export const Board = ({
+  deckId,
   boardOrder,
   excludedCardIds,
   ruledOutCardIds,
@@ -24,19 +24,21 @@ export const Board = ({
   disabled,
   onCardClick,
 }: Props) => {
+  const cardById = useMemo(() => new Map(getDeckCards(deckId).map((card) => [card.id, card])), [deckId]);
   const excludedSet = useMemo(() => new Set(excludedCardIds), [excludedCardIds]);
   const ruledOutSet = useMemo(() => new Set(ruledOutCardIds), [ruledOutCardIds]);
 
   return (
     <div className={styles.grid}>
       {boardOrder.map((cardId) => {
-        const card = CARD_BY_ID.get(cardId);
+        const card = cardById.get(cardId);
         if (!card) return null;
         const isRuledOut = ruledOutSet.has(card.id);
         return (
           <Card
             key={card.id}
             card={card}
+            deckId={deckId}
             excluded={isRuledOut || excludedSet.has(card.id)}
             selected={selectedCardId === card.id}
             guessMode={guessMode}

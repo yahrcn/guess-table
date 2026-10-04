@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { Phase, type RoomSnapshot } from '@guess-table/shared';
+import { Phase, type DeckId, type RoomSnapshot } from '@guess-table/shared';
 import { AsyncStatus } from '../../shared/types';
 import { createRoomState } from './factories';
 
@@ -103,6 +103,17 @@ const slice = createSlice({
       state.isSubmitting = false;
     },
     rematchError(state, action: PayloadAction<{ message: string }>) {
+      state.isSubmitting = false;
+      state.actionError = action.payload.message;
+    },
+    selectDeckBegin(state, _action: PayloadAction<{ deckId: DeckId }>) {
+      state.isSubmitting = true;
+      state.actionError = null;
+    },
+    selectDeckSuccess(state) {
+      state.isSubmitting = false;
+    },
+    selectDeckError(state, action: PayloadAction<{ message: string }>) {
       state.isSubmitting = false;
       state.actionError = action.payload.message;
     },

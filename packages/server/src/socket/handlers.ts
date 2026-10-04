@@ -118,6 +118,17 @@ export function registerSocketHandlers(io: AppServer, roomManager: RoomManager):
       if (result.ok) broadcastRoom(room);
     });
 
+    socket.on('game:selectDeck', (payload, cb) => {
+      const room = currentRoom();
+      if (!room || !state.playerId) {
+        cb(notInRoom());
+        return;
+      }
+      const result = room.selectDeck(state.playerId, payload.deckId);
+      cb(result);
+      if (result.ok) broadcastRoom(room);
+    });
+
     socket.on('disconnect', () => {
       const room = currentRoom();
       if (room) {

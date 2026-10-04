@@ -1,10 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import {
-  CARD_DECK,
+  DEFAULT_DECK_ID,
   ERROR_CODES,
   Phase,
+  getDeckCards,
+  isValidDeckId,
   normalizeQuestion,
   type Ack,
+  type DeckId,
   type ErrorPayload,
   type JoinSuccess,
   type PlayerView,
@@ -43,6 +46,7 @@ export class Room {
   readonly id: string;
   private players: InternalPlayer[] = [];
   private phase: Phase = Phase.Lobby;
+  private deckId: DeckId = DEFAULT_DECK_ID;
   private boardOrder: string[];
   private currentTurnPlayerId: string | null = null;
   private pendingQuestion: QuestionEntry | null = null;
@@ -54,7 +58,7 @@ export class Room {
 
   constructor(id: string) {
     this.id = id;
-    this.boardOrder = shuffle(CARD_DECK.map((c) => c.id));
+    this.boardOrder = shuffle(getDeckCards(this.deckId).map((c) => c.id));
   }
 
   private touch() {
@@ -112,6 +116,27 @@ export class Room {
     return { ok: true, data: { playerId: player.id, playerToken: player.token, snapshot: this.snapshotFor(player.id) } };
   }
 
+  /**
+   * Only the host (first player, by definition the only one present while still in
+   * Lobby — the phase flips to Selecting the instant a second player joins) can swap
+   * the deck, and only before the game actually starts.
+   */
+  selectDeck(playerId: string, deckId: string): Ack<null> {
+    this.touch();
+    if (this.phase !== Phase.Lobby) {
+      return { ok: false, error: err(ERROR_CODES.INVALID_PHASE, 'Набор карточек можно сменить только до начала игры.') };
+    }
+    if (this.players[0]?.id !== playerId) {
+      return { ok: false, error: err(ERROR_CODES.NOT_HOST, 'Набор карточек выбирает создатель комнаты.') };
+    }
+    if (!isValidDeckId(deckId)) {
+      return { ok: false, error: err(ERROR_CODES.INVALID_DECK, 'Такого набора карточек не существует.') };
+    }
+    this.deckId = deckId;
+    this.boardOrder = shuffle(getDeckCards(this.deckId).map((c) => c.id));
+    return { ok: true, data: null };
+  }
+
   markDisconnected(socketId: string): void {
     const player = this.players.find((p) => p.socketId === socketId);
     if (player) {
@@ -131,7 +156,7 @@ export class Room {
     if (player.secretCardId) {
       return { ok: false, error: err(ERROR_CODES.ALREADY_SELECTED, 'Вы уже выбрали карточку.') };
     }
-    if (!CARD_DECK.some((c) => c.id === cardId)) {
+    if (!getDeckCards(this.deckId).some((c) => c.id === cardId)) {
       return { ok: false, error: err(ERROR_CODES.INVALID_CARD, 'Такой карточки нет на поле.') };
     }
     player.secretCardId = cardId;
@@ -203,7 +228,7 @@ export class Room {
     if (this.pendingQuestion) {
       return { ok: false, error: err(ERROR_CODES.INVALID_PHASE, 'Дождитесь ответа на предыдущий вопрос.') };
     }
-    if (!CARD_DECK.some((c) => c.id === cardId)) {
+    if (!getDeckCards(this.deckId).some((c) => c.id === cardId)) {
       return { ok: false, error: err(ERROR_CODES.INVALID_CARD, 'Такой карточки нет на поле.') };
     }
     const opponent = this.players.find((p) => p.id !== playerId);
@@ -245,7 +270,7 @@ export class Room {
   }
 
   private resetForRematch(): void {
-    this.boardOrder = shuffle(CARD_DECK.map((c) => c.id));
+    this.boardOrder = shuffle(getDeckCards(this.deckId).map((c) => c.id));
     for (const p of this.players) {
       p.secretCardId = null;
     }
@@ -269,6 +294,7 @@ export class Room {
     return {
       roomId: this.id,
       phase: this.phase,
+      deckId: this.deckId,
       players,
       boardOrder: this.boardOrder,
       currentTurnPlayerId: this.currentTurnPlayerId,

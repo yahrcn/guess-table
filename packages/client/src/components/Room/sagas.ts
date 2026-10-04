@@ -133,6 +133,18 @@ function* handleRematchBegin() {
   }
 }
 
+function* handleSelectDeck(action: ReturnType<typeof roomActions.selectDeckBegin>) {
+  const ack: Awaited<ReturnType<typeof socketClient.selectDeck>> = yield call(
+    socketClient.selectDeck,
+    action.payload.deckId
+  );
+  if (ack.ok) {
+    yield put(roomActions.selectDeckSuccess());
+  } else {
+    yield put(roomActions.selectDeckError({ message: ack.error.message }));
+  }
+}
+
 /**
  * Persists the current exclusion marks whenever they might have changed: on an explicit
  * toggle, and after every snapshot (covers the rematch reset clearing them back to []).
@@ -162,6 +174,7 @@ export function* roomSaga() {
     takeLatest(roomActions.answerQuestionBegin, handleAnswerQuestion),
     takeLatest(roomActions.finalGuessBegin, handleFinalGuess),
     takeLatest(roomActions.rematchBegin, handleRematchBegin),
+    takeLatest(roomActions.selectDeckBegin, handleSelectDeck),
     takeEvery(roomActions.cardExclusionToggled, persistExcludedCardIds),
     takeEvery(roomActions.finalGuessSuccess, persistExcludedCardIds),
     takeEvery(roomActions.roomSnapshotReceived, persistExcludedCardIds),

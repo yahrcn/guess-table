@@ -1,0 +1,1 @@
+export { DeckAvatar } from './DeckAvatar';

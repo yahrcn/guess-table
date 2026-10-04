@@ -1,0 +1,1 @@
+export { MediaAvatar } from './MediaAvatar';

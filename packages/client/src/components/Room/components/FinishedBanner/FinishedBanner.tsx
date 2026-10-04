@@ -1,15 +1,15 @@
 import cx from 'classnames';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CARD_DECK, type PlayerView } from '@guess-table/shared';
+import { getDeckCards, type DeckId, type PlayerView } from '@guess-table/shared';
 import { useAppDispatch } from '../../../../config/hooks';
 import { Button } from '../../../../shared/components/Button';
 import { roomActions } from '../../slice';
-import { Avatar } from '../Avatar';
+import { DeckAvatar } from '../DeckAvatar';
 import styles from './FinishedBanner.module.css';
 
-const CARD_BY_ID = new Map(CARD_DECK.map((card) => [card.id, card]));
-
 interface Props {
+  deckId: DeckId;
   winnerId: string | null;
   revealedSecrets: Record<string, string> | null;
   players: PlayerView[];
@@ -20,6 +20,7 @@ interface Props {
 }
 
 export const FinishedBanner = ({
+  deckId,
   winnerId,
   revealedSecrets,
   players,
@@ -28,6 +29,7 @@ export const FinishedBanner = ({
   isSubmitting,
   actionError,
 }: Props) => {
+  const cardById = useMemo(() => new Map(getDeckCards(deckId).map((card) => [card.id, card])), [deckId]);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const iWon = winnerId === myPlayerId;
@@ -51,11 +53,11 @@ export const FinishedBanner = ({
         <div className={styles.secrets}>
           {players.map((player) => {
             const cardId = revealedSecrets[player.id];
-            const card = cardId ? CARD_BY_ID.get(cardId) : undefined;
+            const card = cardId ? cardById.get(cardId) : undefined;
             if (!card) return null;
             return (
               <div key={player.id} className={styles.secretCol}>
-                <Avatar seed={card.seed} size={64} title={card.displayName} />
+                <DeckAvatar deckId={deckId} seed={card.seed} size={64} title={card.displayName} />
                 <span>
                   {player.name}: {card.displayName}
                 </span>

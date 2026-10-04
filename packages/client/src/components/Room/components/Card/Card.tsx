@@ -1,10 +1,11 @@
 import cx from 'classnames';
-import type { Card as CardModel } from '@guess-table/shared';
-import { Avatar } from '../Avatar';
+import type { Card as CardModel, DeckId } from '@guess-table/shared';
+import { DeckAvatar } from '../DeckAvatar';
 import styles from './Card.module.css';
 
 interface Props {
   card: CardModel;
+  deckId: DeckId;
   excluded?: boolean;
   selected?: boolean;
   disabled?: boolean;
@@ -12,7 +13,7 @@ interface Props {
   onClick?: () => void;
 }
 
-export const Card = ({ card, excluded, selected, disabled, guessMode, onClick }: Props) => {
+export const Card = ({ card, deckId, excluded, selected, disabled, guessMode, onClick }: Props) => {
   return (
     <button
       type="button"
@@ -27,7 +28,7 @@ export const Card = ({ card, excluded, selected, disabled, guessMode, onClick }:
       aria-pressed={selected}
     >
       <span className={styles.avatarWrap}>
-        <Avatar seed={card.seed} title={card.displayName} />
+        <DeckAvatar deckId={deckId} seed={card.seed} title={card.displayName} />
       </span>
       <span className={styles.name}>{card.displayName}</span>
       {excluded && <span className={styles.crossOverlay} aria-hidden="true" />}
