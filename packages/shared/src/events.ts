@@ -14,11 +14,11 @@ export type Ack<T> = AckOk<T> | AckError;
 
 export interface ClientToServerEvents {
   'room:create': (
-    payload: { playerName: string },
+    payload: { playerName: string; clientId: string },
     cb: (ack: Ack<JoinSuccess & { roomId: string }>) => void
   ) => void;
   'room:join': (
-    payload: { roomId: string; playerName: string; playerToken?: string },
+    payload: { roomId: string; playerName: string; playerToken?: string; clientId: string },
     cb: (ack: Ack<JoinSuccess & { roomId: string }>) => void
   ) => void;
   'game:selectSecret': (

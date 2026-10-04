@@ -15,6 +15,7 @@ import {
   type QuestionEntry,
   type RoomSnapshot,
 } from '@guess-table/shared';
+import * as gameLog from '../db/gameLogRepository.js';
 
 interface InternalPlayer {
   id: string;
@@ -23,6 +24,8 @@ interface InternalPlayer {
   socketId: string | null;
   connected: boolean;
   secretCardId: string | null;
+  /** Stable anonymous id from the player's browser localStorage — analytics only, never sent to the opponent. */
+  clientId: string;
 }
 
 const MAX_PLAYERS = 2;
@@ -56,10 +59,14 @@ export class Room {
   private revealedSecrets: Record<string, string> | null = null;
   private rematchReadyPlayerIds = new Set<string>();
   private lastActivity = Date.now();
+  /** Row id in the `games` analytics table for the game currently being played in this room. */
+  private gameDbId: string;
 
   constructor(id: string) {
     this.id = id;
     this.boardOrder = this.drawBoardOrder();
+    this.gameDbId = randomUUID();
+    gameLog.recordGameCreated(this.gameDbId, this.id, this.deckId);
   }
 
   /** 25 cards drawn at random out of the chosen deck's full 50. */
@@ -83,7 +90,7 @@ export class Room {
     return this.players.find((p) => p.id === id);
   }
 
-  join(playerName: string, socketId: string, token?: string): Ack<JoinSuccess> {
+  join(playerName: string, socketId: string, clientId: string, token?: string): Ack<JoinSuccess> {
     this.touch();
 
     if (token) {
@@ -95,6 +102,7 @@ export class Room {
       existing.connected = true;
       const trimmedName = playerName.trim();
       if (trimmedName) existing.name = trimmedName.slice(0, MAX_NAME_LENGTH);
+      gameLog.recordPlayerJoined(this.gameDbId, existing.clientId, existing.name, this.players[0] === existing);
       return {
         ok: true,
         data: { playerId: existing.id, playerToken: existing.token, snapshot: this.snapshotFor(existing.id) },
@@ -112,8 +120,11 @@ export class Room {
       socketId,
       connected: true,
       secretCardId: null,
+      clientId,
     };
+    const isCreator = this.players.length === 0;
     this.players.push(player);
+    gameLog.recordPlayerJoined(this.gameDbId, player.clientId, player.name, isCreator);
 
     if (this.players.length === MAX_PLAYERS) {
       this.phase = Phase.Selecting;
@@ -140,6 +151,7 @@ export class Room {
     }
     this.deckId = deckId;
     this.boardOrder = this.drawBoardOrder();
+    gameLog.recordGameDeckChanged(this.gameDbId, this.deckId);
     return { ok: true, data: null };
   }
 
@@ -170,6 +182,7 @@ export class Room {
     if (this.players.length === MAX_PLAYERS && this.players.every((p) => p.secretCardId)) {
       this.phase = Phase.Playing;
       this.currentTurnPlayerId = shuffle(this.players)[0]!.id;
+      gameLog.recordGameStarted(this.gameDbId);
     }
     return { ok: true, data: null };
   }
@@ -204,6 +217,10 @@ export class Room {
     };
     this.pendingQuestion = question;
     this.questions.push(question);
+    const author = this.findById(playerId);
+    if (author) {
+      gameLog.recordQuestionAsked(question.id, this.gameDbId, author.clientId, question.text, normalized);
+    }
     return { ok: true, data: null };
   }
 
@@ -217,6 +234,7 @@ export class Room {
     }
     this.pendingQuestion.answer = answer;
     this.pendingQuestion = null;
+    gameLog.recordQuestionAnswered(questionId, answer);
 
     // Turns alternate: whoever just answered asks next.
     this.currentTurnPlayerId = playerId;
@@ -250,6 +268,8 @@ export class Room {
       for (const p of this.players) {
         if (p.secretCardId) this.revealedSecrets[p.id] = p.secretCardId;
       }
+      const winner = this.findById(playerId);
+      if (winner) gameLog.recordGameFinished(this.gameDbId, winner.clientId);
     } else {
       // Wrong guess doesn't end the game — it just costs the guesser their turn.
       this.currentTurnPlayerId = opponent.id;
@@ -287,6 +307,12 @@ export class Room {
     this.winnerId = null;
     this.revealedSecrets = null;
     this.rematchReadyPlayerIds.clear();
+
+    // A rematch is a new game row sharing the same room — lets "games played" count each
+    // round while "games_log.room_id" still ties them back to one shared room/link.
+    this.gameDbId = randomUUID();
+    gameLog.recordGameCreated(this.gameDbId, this.id, this.deckId);
+    this.players.forEach((p, index) => gameLog.recordPlayerJoined(this.gameDbId, p.clientId, p.name, index === 0));
   }
 
   snapshotFor(playerId: string): RoomSnapshot {

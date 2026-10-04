@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: guesstable
+      POSTGRES_PASSWORD: guesstable
+      POSTGRES_DB: guesstable
+    ports:
+      - '5432:5432'
+    volumes:
+      - guesstable-db:/var/lib/postgresql/data
+
+volumes:
+  guesstable-db:

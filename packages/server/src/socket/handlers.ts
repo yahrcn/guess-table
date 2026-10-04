@@ -34,7 +34,7 @@ export function registerSocketHandlers(io: AppServer, roomManager: RoomManager):
 
     socket.on('room:create', (payload, cb) => {
       const room = roomManager.create();
-      const result = room.join(payload.playerName, socket.id);
+      const result = room.join(payload.playerName, socket.id, payload.clientId);
       if (!result.ok) {
         cb(result);
         return;
@@ -51,7 +51,7 @@ export function registerSocketHandlers(io: AppServer, roomManager: RoomManager):
         cb({ ok: false, error: { code: ERROR_CODES.ROOM_NOT_FOUND, message: 'Комната не найдена. Проверьте ссылку.' } });
         return;
       }
-      const result = room.join(payload.playerName, socket.id, payload.playerToken);
+      const result = room.join(payload.playerName, socket.id, payload.clientId, payload.playerToken);
       if (!result.ok) {
         cb(result);
         return;

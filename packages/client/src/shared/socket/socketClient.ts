@@ -6,6 +6,7 @@ import type {
   JoinSuccess,
   ServerToClientEvents,
 } from '@guess-table/shared';
+import { loadOrCreateClientId } from '../helpers/storageHelpers';
 
 type AppSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -23,13 +24,13 @@ type RoomJoinAck = Ack<JoinSuccess & { roomId: string }>;
 
 export function createRoom(playerName: string): Promise<RoomJoinAck> {
   return new Promise((resolve) => {
-    getSocket().emit('room:create', { playerName }, resolve);
+    getSocket().emit('room:create', { playerName, clientId: loadOrCreateClientId() }, resolve);
   });
 }
 
 export function joinRoom(roomId: string, playerName: string, playerToken?: string): Promise<RoomJoinAck> {
   return new Promise((resolve) => {
-    getSocket().emit('room:join', { roomId, playerName, playerToken }, resolve);
+    getSocket().emit('room:join', { roomId, playerName, playerToken, clientId: loadOrCreateClientId() }, resolve);
   });
 }
 

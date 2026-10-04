@@ -2,6 +2,7 @@ const SESSION_PREFIX = 'guess-table:room:';
 const EXCLUDED_PREFIX = 'guess-table:excluded:';
 const RULED_OUT_PREFIX = 'guess-table:ruledOut:';
 const NAME_KEY = 'guess-table:playerName';
+const CLIENT_ID_KEY = 'guess-table:clientId';
 
 export interface StoredSession {
   playerId: string;
@@ -39,6 +40,23 @@ export function savePlayerName(playerName: string): void {
     localStorage.setItem(NAME_KEY, playerName);
   } catch {
     // ignore
+  }
+}
+
+function createId(): string {
+  return crypto.randomUUID();
+}
+
+/** Stable anonymous id for this browser, persisted forever — used only for play-stats aggregation, never shown to the opponent. */
+export function loadOrCreateClientId(): string {
+  try {
+    const existing = localStorage.getItem(CLIENT_ID_KEY);
+    if (existing) return existing;
+    const created = createId();
+    localStorage.setItem(CLIENT_ID_KEY, created);
+    return created;
+  } catch {
+    return createId();
   }
 }
 
