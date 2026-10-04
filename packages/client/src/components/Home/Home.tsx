@@ -19,8 +19,9 @@ export const Home = () => {
   useEffect(() => {
     if (createStatus === AsyncStatus.Succeeded && createdRoomId) {
       navigate(`/room/${createdRoomId}`);
+      dispatch(homeActions.createRoomRedirected());
     }
-  }, [createStatus, createdRoomId, navigate]);
+  }, [createStatus, createdRoomId, navigate, dispatch]);
 
   const handleCreate = (event: FormEvent) => {
     event.preventDefault();
