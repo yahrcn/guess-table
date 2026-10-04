@@ -87,6 +87,7 @@ npm start       # запустит собранный сервер; он же о
 
 - **Переменные окружения** (см. [`packages/server/.env.example`](packages/server/.env.example)):
   - `DATABASE_URL` — строка подключения к Postgres. Не задана — логирование и `/admin` тихо отключаются, сама игра работает как обычно (ни одного запроса к БД не выполняется).
+  - Вместо `DATABASE_URL` можно задать отдельные `POSTGRESQL_HOST`/`POSTGRESQL_PORT`/`POSTGRESQL_USER`/`POSTGRESQL_PASSWORD`/`POSTGRESQL_DBNAME` — именно в таком виде Timeweb Cloud Databases отдаёт реквизиты managed Postgres. Используются только если `DATABASE_URL` не задан.
   - `DATABASE_SSL=true` — включить для managed Postgres (Timeweb Cloud Databases и т.п.), которым обычно нужен SSL. Для локального `docker-compose` не указывать.
   - `ADMIN_PASSWORD` — пароль для Basic Auth на `/admin` и `/api/admin/stats`. Не задан — обе ручки отвечают `503`.
 - **Схема БД** создаётся/обновляется сама при старте сервера (`runMigrations()`, идемпотентные `CREATE TABLE IF NOT EXISTS` — см. [`db/migrate.ts`](packages/server/src/db/migrate.ts)), никакого отдельного шага миграции руками не требуется.
