@@ -43,6 +43,9 @@ export function getPool(): Pool | null {
       pool = new Pool({
         ...config,
         ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+        // pg's own default is to wait forever on a bad host/firewall — a stuck connection
+        // attempt here must never be able to stall startup or hang a request.
+        connectionTimeoutMillis: 5000,
       });
       pool.on('error', (error) => {
         console.error('[db] pool error', error);

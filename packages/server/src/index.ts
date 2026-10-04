@@ -62,12 +62,11 @@ if (hasClientBuild) {
   });
 }
 
-async function start() {
-  await runMigrations();
-  httpServer.listen(PORT, () => {
-    console.log(`Guess-table server listening on port ${PORT} (${isProduction ? 'production' : 'development'})`);
-    console.log(hasClientBuild ? `Serving client build from ${path.dirname(clientIndexHtml)}` : 'Client build not found — serving API/WebSocket only.');
-  });
-}
+// Migrations run in the background rather than gating startup — the game itself must
+// stay reachable even if the database is slow, misconfigured, or unreachable.
+runMigrations();
 
-start();
+httpServer.listen(PORT, () => {
+  console.log(`Guess-table server listening on port ${PORT} (${isProduction ? 'production' : 'development'})`);
+  console.log(hasClientBuild ? `Serving client build from ${path.dirname(clientIndexHtml)}` : 'Client build not found — serving API/WebSocket only.');
+});
