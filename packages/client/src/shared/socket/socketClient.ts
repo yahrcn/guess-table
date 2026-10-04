@@ -64,6 +64,12 @@ export function rematchBegin(): Promise<Ack<null>> {
   });
 }
 
+export function leaveLobby(): Promise<Ack<null>> {
+  return new Promise((resolve) => {
+    getSocket().emit('room:leave', resolve);
+  });
+}
+
 export function selectDeck(deckId: DeckId): Promise<Ack<null>> {
   return new Promise((resolve) => {
     getSocket().emit('game:selectDeck', { deckId }, resolve);

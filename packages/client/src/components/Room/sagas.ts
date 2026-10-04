@@ -133,6 +133,17 @@ function* handleRematchBegin() {
   }
 }
 
+function* handleLeaveLobby() {
+  const roomId: string | null = yield select(selectSessionRoomId);
+  const ack: Awaited<ReturnType<typeof socketClient.leaveLobby>> = yield call(socketClient.leaveLobby);
+  if (!ack.ok) {
+    yield put(roomActions.leaveLobbyError({ message: ack.error.message }));
+    return;
+  }
+  if (roomId) storageHelpers.clearRoomStorage(roomId);
+  window.location.assign('/');
+}
+
 function* handleSelectDeck(action: ReturnType<typeof roomActions.selectDeckBegin>) {
   const ack: Awaited<ReturnType<typeof socketClient.selectDeck>> = yield call(
     socketClient.selectDeck,
@@ -175,6 +186,7 @@ export function* roomSaga() {
     takeLatest(roomActions.finalGuessBegin, handleFinalGuess),
     takeLatest(roomActions.rematchBegin, handleRematchBegin),
     takeLatest(roomActions.selectDeckBegin, handleSelectDeck),
+    takeLatest(roomActions.leaveLobbyBegin, handleLeaveLobby),
     takeEvery(roomActions.cardExclusionToggled, persistExcludedCardIds),
     takeEvery(roomActions.finalGuessSuccess, persistExcludedCardIds),
     takeEvery(roomActions.roomSnapshotReceived, persistExcludedCardIds),

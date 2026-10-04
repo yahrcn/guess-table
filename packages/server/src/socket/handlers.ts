@@ -129,6 +129,24 @@ export function registerSocketHandlers(io: AppServer, roomManager: RoomManager):
       if (result.ok) broadcastRoom(room);
     });
 
+    socket.on('room:leave', (cb) => {
+      const room = currentRoom();
+      if (!room || !state.playerId) {
+        cb(notInRoom());
+        return;
+      }
+      const result = room.canLeaveLobby(state.playerId);
+      if (!result.ok) {
+        cb(result);
+        return;
+      }
+      roomManager.remove(room.id);
+      socket.leave(room.id);
+      state.roomId = undefined;
+      state.playerId = undefined;
+      cb(result);
+    });
+
     socket.on('disconnect', () => {
       const room = currentRoom();
       if (room) {

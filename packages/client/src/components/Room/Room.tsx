@@ -131,7 +131,15 @@ export const Room = ({ roomId }: Props) => {
       {waitingForOpponent && (
         <>
           <div className={styles.notice}>Ожидаем второго игрока — поделитесь ссылкой на комнату.</div>
+          {actionError && <div className={styles.errorNotice}>{actionError}</div>}
           <DeckPicker selectedDeckId={snapshot.deckId} isSubmitting={isSubmitting} />
+          <Button
+            variant="secondary"
+            disabled={isSubmitting}
+            onClick={() => dispatch(roomActions.leaveLobbyBegin())}
+          >
+            Выйти из лобби
+          </Button>
         </>
       )}
 

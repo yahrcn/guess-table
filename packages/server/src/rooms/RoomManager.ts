@@ -29,6 +29,10 @@ export class RoomManager {
     return this.rooms.get(roomId);
   }
 
+  remove(roomId: string): void {
+    this.rooms.delete(roomId);
+  }
+
   private cleanupExpired(): void {
     for (const [id, room] of this.rooms) {
       if (room.isExpired()) this.rooms.delete(id);

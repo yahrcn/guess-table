@@ -117,6 +117,14 @@ const slice = createSlice({
       state.isSubmitting = false;
       state.actionError = action.payload.message;
     },
+    leaveLobbyBegin(state) {
+      state.isSubmitting = true;
+      state.actionError = null;
+    },
+    leaveLobbyError(state, action: PayloadAction<{ message: string }>) {
+      state.isSubmitting = false;
+      state.actionError = action.payload.message;
+    },
   },
 });
 

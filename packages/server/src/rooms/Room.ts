@@ -155,6 +155,17 @@ export class Room {
     return { ok: true, data: null };
   }
 
+  /** Only the lone host, and only before a second player has joined, can cancel the room outright. */
+  canLeaveLobby(playerId: string): Ack<null> {
+    if (this.phase !== Phase.Lobby) {
+      return { ok: false, error: err(ERROR_CODES.INVALID_PHASE, 'Выйти можно только из лобби, пока не начата партия.') };
+    }
+    if (this.players[0]?.id !== playerId) {
+      return { ok: false, error: err(ERROR_CODES.INVALID_TOKEN, 'Игрок не найден в комнате.') };
+    }
+    return { ok: true, data: null };
+  }
+
   markDisconnected(socketId: string): void {
     const player = this.players.find((p) => p.socketId === socketId);
     if (player) {

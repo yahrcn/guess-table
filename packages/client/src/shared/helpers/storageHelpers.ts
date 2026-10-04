@@ -27,6 +27,16 @@ export function saveSession(roomId: string, session: StoredSession): void {
   }
 }
 
+export function clearRoomStorage(roomId: string): void {
+  try {
+    localStorage.removeItem(SESSION_PREFIX + roomId);
+    localStorage.removeItem(EXCLUDED_PREFIX + roomId);
+    localStorage.removeItem(RULED_OUT_PREFIX + roomId);
+  } catch {
+    // ignore
+  }
+}
+
 export function loadPlayerName(): string {
   try {
     return localStorage.getItem(NAME_KEY) ?? '';

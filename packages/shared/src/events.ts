@@ -38,6 +38,7 @@ export interface ClientToServerEvents {
     cb: (ack: Ack<{ correct: boolean }>) => void
   ) => void;
   'game:rematchBegin': (cb: (ack: Ack<null>) => void) => void;
+  'room:leave': (cb: (ack: Ack<null>) => void) => void;
   'game:selectDeck': (
     payload: { deckId: DeckId },
     cb: (ack: Ack<null>) => void
