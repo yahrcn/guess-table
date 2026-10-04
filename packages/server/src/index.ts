@@ -17,6 +17,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 4000;
 const isProduction = process.env.NODE_ENV === 'production';
 
+// Postgres is reachable over the network and can fail in ways a single try/catch at
+// the call site might miss — don't let a DB hiccup take the whole game server down.
+process.on('unhandledRejection', (error) => {
+  console.error('[server] unhandled rejection', error);
+});
+
 const app = express();
 const httpServer = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
@@ -35,8 +41,13 @@ app.get('/admin', adminAuth, (_req, res) => {
 });
 
 app.get('/api/admin/stats', adminAuth, async (_req, res) => {
-  const stats = await getAdminStats();
-  res.json(stats);
+  try {
+    const stats = await getAdminStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('[admin] failed to load stats', error);
+    res.status(500).json({ error: 'Не удалось получить статистику — проверьте подключение к базе данных.' });
+  }
 });
 
 // Keyed on the build actually being present on disk rather than NODE_ENV — some hosts
