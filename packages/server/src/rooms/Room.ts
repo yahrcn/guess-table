@@ -10,6 +10,7 @@ import {
   type Ack,
   type DeckId,
   type ErrorPayload,
+  type FinalGuessEntry,
   type JoinSuccess,
   type PlayerView,
   type QuestionEntry,
@@ -55,6 +56,7 @@ export class Room {
   private currentTurnPlayerId: string | null = null;
   private pendingQuestion: QuestionEntry | null = null;
   private questions: QuestionEntry[] = [];
+  private finalGuesses: FinalGuessEntry[] = [];
   private winnerId: string | null = null;
   private revealedSecrets: Record<string, string> | null = null;
   private rematchReadyPlayerIds = new Set<string>();
@@ -272,6 +274,7 @@ export class Room {
     }
 
     const correct = opponent.secretCardId === cardId;
+    this.finalGuesses.push({ id: randomUUID(), authorId: playerId, cardId, correct, createdAt: Date.now() });
     if (correct) {
       this.phase = Phase.Finished;
       this.winnerId = playerId;
@@ -315,6 +318,7 @@ export class Room {
     this.currentTurnPlayerId = null;
     this.pendingQuestion = null;
     this.questions = [];
+    this.finalGuesses = [];
     this.winnerId = null;
     this.revealedSecrets = null;
     this.rematchReadyPlayerIds.clear();
@@ -343,6 +347,7 @@ export class Room {
       currentTurnPlayerId: this.currentTurnPlayerId,
       pendingQuestionId: this.pendingQuestion?.id ?? null,
       questions: this.questions,
+      finalGuesses: this.finalGuesses,
       winnerId: this.winnerId,
       revealedSecrets: this.revealedSecrets,
       mySecretCardId: me?.secretCardId ?? null,

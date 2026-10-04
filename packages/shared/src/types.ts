@@ -34,6 +34,14 @@ export interface QuestionEntry {
   createdAt: number;
 }
 
+export interface FinalGuessEntry {
+  id: string;
+  authorId: string;
+  cardId: string;
+  correct: boolean;
+  createdAt: number;
+}
+
 export interface RoomSnapshot {
   roomId: string;
   phase: Phase;
@@ -43,6 +51,7 @@ export interface RoomSnapshot {
   currentTurnPlayerId: string | null;
   pendingQuestionId: string | null;
   questions: QuestionEntry[];
+  finalGuesses: FinalGuessEntry[];
   winnerId: string | null;
   revealedSecrets: Record<string, string> | null;
   /** The secret card id belonging to the recipient of this snapshot (never the opponent's). */

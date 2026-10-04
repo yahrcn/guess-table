@@ -185,7 +185,12 @@ export const Room = ({ roomId }: Props) => {
               isSubmitting={isSubmitting}
               actionError={actionError}
             />
-            <QuestionLog questions={snapshot.questions} players={snapshot.players} />
+            <QuestionLog
+              deckId={snapshot.deckId}
+              questions={snapshot.questions}
+              finalGuesses={snapshot.finalGuesses}
+              players={snapshot.players}
+            />
           </div>
         )}
       </div>
