@@ -12,6 +12,7 @@ export enum DeckId {
   Professions = 'professions',
   Movies = 'movies',
   VideoGames = 'videoGames',
+  Actors = 'actors',
 }
 
 export interface Card {

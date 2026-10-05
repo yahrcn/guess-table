@@ -331,6 +331,64 @@ const VIDEO_GAMES: Card[] = [
   { id: 'game-50', displayName: 'Hearthstone' },
 ];
 
+// Currently popular, living actors/actresses — names only, same as Movies/VideoGames
+// above: no photos, posters or any real likeness anywhere, just a generated illustration.
+// Unlike CELEBRITIES this deliberately includes living people (that's the whole point —
+// "most popular right now" can't mean historical figures), which is why it's its own
+// deck instead of being folded into CELEBRITIES.
+const ACTORS: Card[] = [
+  { id: 'actor-01', displayName: 'Леонардо Ди Каприо' },
+  { id: 'actor-02', displayName: 'Скарлетт Йоханссон' },
+  { id: 'actor-03', displayName: 'Том Хэнкс' },
+  { id: 'actor-04', displayName: 'Мэрил Стрип' },
+  { id: 'actor-05', displayName: 'Дензел Вашингтон' },
+  { id: 'actor-06', displayName: 'Эмма Уотсон' },
+  { id: 'actor-07', displayName: 'Брэд Питт' },
+  { id: 'actor-08', displayName: 'Анджелина Джоли' },
+  { id: 'actor-09', displayName: 'Роберт Дауни младший' },
+  { id: 'actor-10', displayName: 'Зендея' },
+  { id: 'actor-11', displayName: 'Тимоти Шаламе' },
+  { id: 'actor-12', displayName: 'Марго Робби' },
+  { id: 'actor-13', displayName: 'Дуэйн Джонсон' },
+  { id: 'actor-14', displayName: 'Дженнифер Лоуренс' },
+  { id: 'actor-15', displayName: 'Райан Гослинг' },
+  { id: 'actor-16', displayName: 'Эмма Стоун' },
+  { id: 'actor-17', displayName: 'Том Холланд' },
+  { id: 'actor-18', displayName: 'Флоренс Пью' },
+  { id: 'actor-19', displayName: 'Киану Ривз' },
+  { id: 'actor-20', displayName: 'Энн Хэтэуэй' },
+  { id: 'actor-21', displayName: 'Крис Хемсворт' },
+  { id: 'actor-22', displayName: 'Натали Портман' },
+  { id: 'actor-23', displayName: 'Уилл Смит' },
+  { id: 'actor-24', displayName: 'Шарлиз Терон' },
+  { id: 'actor-25', displayName: 'Кейт Бланшетт' },
+  { id: 'actor-26', displayName: 'Хью Джекман' },
+  { id: 'actor-27', displayName: 'Николь Кидман' },
+  { id: 'actor-28', displayName: 'Сандра Буллок' },
+  { id: 'actor-29', displayName: 'Бенедикт Камбербэтч' },
+  { id: 'actor-30', displayName: 'Галь Гадот' },
+  { id: 'actor-31', displayName: 'Константин Хабенский' },
+  { id: 'actor-32', displayName: 'Евгений Миронов' },
+  { id: 'actor-33', displayName: 'Сергей Безруков' },
+  { id: 'actor-34', displayName: 'Данила Козловский' },
+  { id: 'actor-35', displayName: 'Александр Петров' },
+  { id: 'actor-36', displayName: 'Юлия Пересильд' },
+  { id: 'actor-37', displayName: 'Паулина Андреева' },
+  { id: 'actor-38', displayName: 'Светлана Ходченкова' },
+  { id: 'actor-39', displayName: 'Милош Бикович' },
+  { id: 'actor-40', displayName: 'Чулпан Хаматова' },
+  { id: 'actor-41', displayName: 'Виктория Исакова' },
+  { id: 'actor-42', displayName: 'Фёдор Бондарчук' },
+  { id: 'actor-43', displayName: 'Ольга Куриленко' },
+  { id: 'actor-44', displayName: 'Юра Борисов' },
+  { id: 'actor-45', displayName: 'Любовь Аксёнова' },
+  { id: 'actor-46', displayName: 'Ирина Горбачёва' },
+  { id: 'actor-47', displayName: 'Марк Эйдельштейн' },
+  { id: 'actor-48', displayName: 'Аглая Тарасова' },
+  { id: 'actor-49', displayName: 'Антон Шагин' },
+  { id: 'actor-50', displayName: 'Никита Ефремов' },
+];
+
 export const CARD_DECKS: Record<DeckId, Card[]> = {
   [DeckId.Fictional]: FICTIONAL,
   [DeckId.Celebrities]: CELEBRITIES,
@@ -338,6 +396,7 @@ export const CARD_DECKS: Record<DeckId, Card[]> = {
   [DeckId.Professions]: PROFESSIONS,
   [DeckId.Movies]: MOVIES,
   [DeckId.VideoGames]: VIDEO_GAMES,
+  [DeckId.Actors]: ACTORS,
 };
 
 export const DECK_LABELS: Record<DeckId, string> = {
@@ -347,6 +406,7 @@ export const DECK_LABELS: Record<DeckId, string> = {
   [DeckId.Professions]: 'Профессии',
   [DeckId.Movies]: 'Фильмы',
   [DeckId.VideoGames]: 'Видеоигры',
+  [DeckId.Actors]: 'Актёры и актрисы',
 };
 
 export const DEFAULT_DECK_ID = DeckId.Fictional;

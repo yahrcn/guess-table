@@ -25,7 +25,8 @@ export type BadgeIcon =
   | 'tooth'
   | 'speech'
   | 'ruler'
-  | 'flask';
+  | 'flask'
+  | 'star';
 
 const INK = '#2b2118';
 
@@ -236,6 +237,19 @@ export function renderBadge(icon: BadgeIcon, cx: number, cy: number) {
           <rect x={cx - 3.2} y={cy - 10} width="6.4" height="2" fill={INK} />
         </g>
       );
+    case 'star': {
+      // Five-pointed "show business" star — marks the Actors deck, computed rather than
+      // hand-typed since ten alternating-radius points aren't legible as literal numbers.
+      const outer = 8;
+      const inner = 3.3;
+      const points: string[] = [];
+      for (let i = 0; i < 10; i++) {
+        const r = i % 2 === 0 ? outer : inner;
+        const angle = (Math.PI / 5) * i - Math.PI / 2;
+        points.push(`${(cx + r * Math.cos(angle)).toFixed(1)},${(cy + r * Math.sin(angle)).toFixed(1)}`);
+      }
+      return <polygon points={points.join(' ')} fill="#E3B13A" stroke={INK} strokeWidth="0.6" />;
+    }
     default:
       return null;
   }

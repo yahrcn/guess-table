@@ -85,6 +85,30 @@ const PROFESSION_ROWS: Row[] = [
   [1, 1, 1, 2, false, true, 'paintbrush'], [7, 0, 3, 0, false, false, 'gavel'],
 ];
 
+// Order matches ACTORS. Living, currently-popular actors/actresses — every row wears the
+// 'star' badge (that's what marks the deck as "show business", not a per-card distinction
+// the way profession badges are), with bg/skin/hair/hairstyle varied so the 50 faces read
+// as distinct from each other rather than near-duplicates.
+const ACTOR_ROWS: Row[] = [
+  [0, 0, 0, 0, false, true, 'star'], [1, 1, 1, 1, false, true, 'star'], [2, 2, 2, 2, true, false, 'star'],
+  [3, 3, 3, 3, false, true, 'star'], [4, 4, 4, 0, false, false, 'star'], [5, 5, 5, 1, true, true, 'star'],
+  [6, 0, 6, 2, false, true, 'star'], [7, 1, 0, 3, false, false, 'star'], [8, 2, 1, 0, true, true, 'star'],
+  [9, 3, 2, 1, false, true, 'star'], [0, 4, 3, 2, false, false, 'star'], [1, 5, 4, 3, true, true, 'star'],
+  [2, 0, 5, 0, false, true, 'star'], [3, 1, 6, 1, false, false, 'star'], [4, 2, 0, 2, true, true, 'star'],
+  [5, 3, 1, 3, false, true, 'star'], [6, 4, 2, 0, false, false, 'star'], [7, 5, 3, 1, true, true, 'star'],
+  [8, 0, 4, 2, false, true, 'star'], [9, 1, 5, 3, false, false, 'star'], [0, 2, 6, 0, true, true, 'star'],
+  [1, 3, 0, 1, false, true, 'star'], [2, 4, 1, 2, false, false, 'star'], [3, 5, 2, 3, true, true, 'star'],
+  [4, 0, 3, 0, false, true, 'star'], [5, 1, 4, 1, false, false, 'star'], [6, 2, 5, 2, true, true, 'star'],
+  [7, 3, 6, 3, false, true, 'star'], [8, 4, 0, 0, false, false, 'star'], [9, 5, 1, 1, true, true, 'star'],
+  [0, 0, 2, 2, false, true, 'star'], [1, 1, 3, 3, false, false, 'star'], [2, 2, 4, 0, true, true, 'star'],
+  [3, 3, 5, 1, false, true, 'star'], [4, 4, 6, 2, false, false, 'star'], [5, 5, 0, 3, true, true, 'star'],
+  [6, 0, 1, 0, false, true, 'star'], [7, 1, 2, 1, false, false, 'star'], [8, 2, 3, 2, true, true, 'star'],
+  [9, 3, 4, 3, false, true, 'star'], [0, 4, 5, 0, false, false, 'star'], [1, 5, 6, 1, true, true, 'star'],
+  [2, 0, 0, 2, false, true, 'star'], [3, 1, 1, 3, false, false, 'star'], [4, 2, 2, 0, true, true, 'star'],
+  [5, 3, 3, 1, false, true, 'star'], [6, 4, 4, 2, false, false, 'star'], [7, 5, 5, 3, true, true, 'star'],
+  [8, 0, 6, 0, false, true, 'star'], [9, 1, 0, 1, false, false, 'star'],
+];
+
 function pickDesign(rows: Row[], cardId: string): PersonDesign {
   const row = rows[indexFromCardId(cardId)];
   return row ? toDesign(row) : FALLBACK;
@@ -93,5 +117,6 @@ function pickDesign(rows: Row[], cardId: string): PersonDesign {
 export function getPersonDesign(cardId: string): PersonDesign {
   if (cardId.startsWith('celebrity-')) return pickDesign(CELEBRITY_ROWS, cardId);
   if (cardId.startsWith('profession-')) return pickDesign(PROFESSION_ROWS, cardId);
+  if (cardId.startsWith('actor-')) return pickDesign(ACTOR_ROWS, cardId);
   return pickDesign(FICTIONAL_ROWS, cardId);
 }

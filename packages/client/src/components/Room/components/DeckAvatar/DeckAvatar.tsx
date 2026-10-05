@@ -22,6 +22,7 @@ function renderGenerated(deckId: DeckId, cardId: string, size: number | undefine
     case DeckId.Fictional:
     case DeckId.Celebrities:
     case DeckId.Professions:
+    case DeckId.Actors:
     default:
       return <Avatar cardId={cardId} size={size} title={title} />;
   }
