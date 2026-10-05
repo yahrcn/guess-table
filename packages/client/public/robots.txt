@@ -3,3 +3,5 @@ Allow: /
 Disallow: /room/
 Disallow: /admin
 Disallow: /api/
+
+Sitemap: https://guesswho.su/sitemap.xml

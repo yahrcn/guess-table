@@ -11,6 +11,7 @@
 *.svg text eol=crlf
 *.txt text eol=crlf
 *.webmanifest text eol=crlf
+*.xml text eol=crlf
 
 # Lock files are machine-regenerated (npm always writes LF) — leave line endings alone
 # so `npm install` doesn't fight with the CRLF rule above on every dependency change.
