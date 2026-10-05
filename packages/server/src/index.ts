@@ -56,8 +56,25 @@ app.get('/api/admin/stats', adminAuth, async (_req, res) => {
 const clientIndexHtml = path.resolve(__dirname, '../../client/dist/index.html');
 const hasClientBuild = existsSync(clientIndexHtml);
 if (hasClientBuild) {
-  app.use(express.static(path.dirname(clientIndexHtml)));
+  app.use(
+    express.static(path.dirname(clientIndexHtml), {
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+          // Must always be revalidated — it's what points browsers at the current
+          // content-hashed JS/CSS bundle. A stale cached copy here means a player can
+          // silently run an old build against the new server (mismatched behavior that
+          // looks like "it works for one player but not the other").
+          res.setHeader('Cache-Control', 'no-cache');
+        } else if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          // Vite hashes these filenames by content, so the URL itself changes whenever
+          // the file does — safe to cache for as long as the browser wants.
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      },
+    })
+  );
   app.get('*', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(clientIndexHtml);
   });
 }
