@@ -20,6 +20,16 @@ export interface Card {
   displayName: string;
 }
 
+export enum AppealReason {
+  Duplicate = 'duplicate',
+  Invalid = 'invalid',
+}
+
+export const APPEAL_REASON_LABELS: Record<AppealReason, string> = {
+  [AppealReason.Duplicate]: 'Такой вопрос уже был',
+  [AppealReason.Invalid]: 'Вопрос некорректен',
+};
+
 export interface PlayerView {
   id: string;
   name: string;
@@ -33,6 +43,8 @@ export interface QuestionEntry {
   text: string;
   answer: boolean | null;
   createdAt: number;
+  /** Set once the recipient appeals instead of answering — the question is then never answered. */
+  appeal?: { reason: AppealReason; upheld: boolean };
 }
 
 export interface FinalGuessEntry {
@@ -59,6 +71,8 @@ export interface RoomSnapshot {
   mySecretCardId: string | null;
   /** Ids of players who have asked for a rematch in the current (finished) game. */
   rematchReadyPlayerIds: string[];
+  /** Ids of players whose appeal button is disabled for the rest of this game (too many unjustified appeals). */
+  appealLockedPlayerIds: string[];
 }
 
 export interface JoinSuccess {

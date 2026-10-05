@@ -27,6 +27,11 @@ export interface AdminStats {
     medianSeconds: number | null;
     finishedCount: number;
   };
+  appeals: {
+    reason: string;
+    count: number;
+    upheldCount: number;
+  }[];
 }
 
 /** Returns null when DATABASE_URL isn't configured — caller renders a "no data" state instead of erroring. */
@@ -34,7 +39,7 @@ export async function getAdminStats(): Promise<AdminStats | null> {
   const pool = getPool();
   if (!pool) return null;
 
-  const [totalsRes, topPlayersRes, topQuestionsRes, decksRes, durationRes] = await Promise.all([
+  const [totalsRes, topPlayersRes, topQuestionsRes, decksRes, durationRes, appealsRes] = await Promise.all([
     pool.query<{ games: string; finished_games: string; questions: string; players: string }>(`
       SELECT
         (SELECT COUNT(*) FROM games) AS games,
@@ -78,6 +83,12 @@ export async function getAdminStats(): Promise<AdminStats | null> {
       FROM games
       WHERE finished_at IS NOT NULL AND started_at IS NOT NULL
     `),
+    pool.query<{ reason: string; count: string; upheld_count: string }>(`
+      SELECT reason, COUNT(*) AS count, COUNT(*) FILTER (WHERE upheld) AS upheld_count
+      FROM appeals
+      GROUP BY reason
+      ORDER BY count DESC
+    `),
   ]);
 
   const totals = totalsRes.rows[0];
@@ -110,5 +121,10 @@ export async function getAdminStats(): Promise<AdminStats | null> {
       medianSeconds: duration?.median_seconds != null ? Number(duration.median_seconds) : null,
       finishedCount: Number(duration?.finished_count ?? 0),
     },
+    appeals: appealsRes.rows.map((row) => ({
+      reason: row.reason,
+      count: Number(row.count),
+      upheldCount: Number(row.upheld_count),
+    })),
   };
 }

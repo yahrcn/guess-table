@@ -35,6 +35,7 @@ export const Room = ({ roomId }: Props) => {
     isMyTurn,
     isPendingQuestionMine,
     haveSelectedSecret,
+    isAppealLocked,
   } = useAppSelector(selectRoomViewModel);
 
   const knownName = loadSession(roomId)?.playerName || loadPlayerName();
@@ -181,6 +182,7 @@ export const Room = ({ roomId }: Props) => {
               isMyTurn={isMyTurn}
               pendingQuestion={pendingQuestion}
               isPendingQuestionMine={isPendingQuestionMine}
+              isAppealLocked={isAppealLocked}
               guessMode={guessMode}
               isSubmitting={isSubmitting}
               actionError={actionError}

@@ -54,6 +54,20 @@ export function recordQuestionAnswered(questionId: string, answer: boolean): voi
   void run('UPDATE questions SET answer = $2 WHERE id = $1', [questionId, answer]);
 }
 
+export function recordAppeal(
+  appealId: string,
+  gameDbId: string,
+  questionId: string,
+  appellantClientId: string,
+  reason: string,
+  upheld: boolean
+): void {
+  void run(
+    'INSERT INTO appeals (id, game_id, question_id, appellant_client_id, reason, upheld) VALUES ($1, $2, $3, $4, $5, $6)',
+    [appealId, gameDbId, questionId, appellantClientId, reason, upheld]
+  );
+}
+
 export function recordGameFinished(gameDbId: string, winnerClientId: string): void {
   void run('UPDATE games SET finished_at = now(), winner_client_id = $2 WHERE id = $1 AND finished_at IS NULL', [
     gameDbId,

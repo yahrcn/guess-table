@@ -45,6 +45,26 @@
   display: flex;
   gap: 10px;
   margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.appealReasons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.appealHint {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.appealLockedNote {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--color-danger);
 }
 
 .error {

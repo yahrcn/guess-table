@@ -1,6 +1,7 @@
 import { io, type Socket } from 'socket.io-client';
 import type {
   Ack,
+  AppealReason,
   ClientToServerEvents,
   DeckId,
   JoinSuccess,
@@ -49,6 +50,12 @@ export function askQuestion(text: string): Promise<Ack<null>> {
 export function answerQuestion(questionId: string, answer: boolean): Promise<Ack<null>> {
   return new Promise((resolve) => {
     getSocket().emit('game:answerQuestion', { questionId, answer }, resolve);
+  });
+}
+
+export function appealQuestion(questionId: string, reason: AppealReason): Promise<Ack<null>> {
+  return new Promise((resolve) => {
+    getSocket().emit('game:appealQuestion', { questionId, reason }, resolve);
   });
 }
 

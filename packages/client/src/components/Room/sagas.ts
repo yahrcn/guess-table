@@ -114,6 +114,20 @@ function* handleAnswerQuestion(action: ReturnType<typeof roomActions.answerQuest
   }
 }
 
+function* handleAppealQuestion(action: ReturnType<typeof roomActions.appealQuestionBegin>) {
+  const { questionId, reason } = action.payload;
+  const ack: Awaited<ReturnType<typeof socketClient.appealQuestion>> = yield call(
+    socketClient.appealQuestion,
+    questionId,
+    reason
+  );
+  if (ack.ok) {
+    yield put(roomActions.appealQuestionSuccess());
+  } else {
+    yield put(roomActions.appealQuestionError({ message: ack.error.message }));
+  }
+}
+
 function* handleFinalGuess(action: ReturnType<typeof roomActions.finalGuessBegin>) {
   const { cardId } = action.payload;
   const ack: Awaited<ReturnType<typeof socketClient.finalGuess>> = yield call(socketClient.finalGuess, cardId);
@@ -183,6 +197,7 @@ export function* roomSaga() {
     takeLatest(roomActions.selectSecretBegin, handleSelectSecret),
     takeLatest(roomActions.askQuestionBegin, handleAskQuestion),
     takeLatest(roomActions.answerQuestionBegin, handleAnswerQuestion),
+    takeLatest(roomActions.appealQuestionBegin, handleAppealQuestion),
     takeLatest(roomActions.finalGuessBegin, handleFinalGuess),
     takeLatest(roomActions.rematchBegin, handleRematchBegin),
     takeLatest(roomActions.selectDeckBegin, handleSelectDeck),

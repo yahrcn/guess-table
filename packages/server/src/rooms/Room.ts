@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  AppealReason,
   BOARD_SIZE,
   DEFAULT_DECK_ID,
   ERROR_CODES,
@@ -17,6 +18,34 @@ import {
   type RoomSnapshot,
 } from '@guess-table/shared';
 import * as gameLog from '../db/gameLogRepository.js';
+
+const APPEAL_LOCK_MIN_ATTEMPTS = 3;
+const APPEAL_LOCK_MAX_UPHELD_RATE = 0.5;
+const APPEAL_DUPLICATE_SIMILARITY_THRESHOLD = 0.5;
+const OPEN_QUESTION_WORDS = ['как', 'что', 'кто', 'какой', 'какая', 'какое', 'какие', 'где', 'когда', 'почему', 'сколько', 'зачем'];
+
+function wordsOf(text: string): Set<string> {
+  return new Set(normalizeQuestion(text).split(' ').filter(Boolean));
+}
+
+/** Overlap coefficient (shared words / smaller word-set size) — lenient on purpose, short questions differ by a word or two even when they mean the same thing. */
+function wordOverlapRatio(a: string, b: string): number {
+  const wordsA = wordsOf(a);
+  const wordsB = wordsOf(b);
+  if (wordsA.size === 0 || wordsB.size === 0) return 0;
+  let shared = 0;
+  for (const word of wordsA) {
+    if (wordsB.has(word)) shared += 1;
+  }
+  return shared / Math.min(wordsA.size, wordsB.size);
+}
+
+/** Crude heuristic: "как/что/кто/где/..." without "ли" usually means it isn't answerable with a plain да/нет. */
+function looksLikeOpenQuestion(text: string): boolean {
+  const words = wordsOf(text);
+  if (words.has('ли')) return false;
+  return OPEN_QUESTION_WORDS.some((word) => words.has(word));
+}
 
 interface InternalPlayer {
   id: string;
@@ -60,6 +89,8 @@ export class Room {
   private winnerId: string | null = null;
   private revealedSecrets: Record<string, string> | null = null;
   private rematchReadyPlayerIds = new Set<string>();
+  private appealLockedPlayerIds = new Set<string>();
+  private appealStats = new Map<string, { total: number; upheld: number }>();
   private lastActivity = Date.now();
   /** Row id in the `games` analytics table for the game currently being played in this room. */
   private gameDbId: string;
@@ -254,6 +285,63 @@ export class Room {
     return { ok: true, data: null };
   }
 
+  /**
+   * An appeal voids the pending question instead of answering it — no server-verifiable
+   * ground truth exists for "was this appeal justified", so we approximate: a Duplicate
+   * appeal is upheld only if the question actually overlaps an earlier one, an Invalid
+   * appeal only if the question doesn't read like a да/нет question at all. Players who
+   * rack up mostly-rejected appeals lose access to the button for the rest of the game.
+   */
+  private isAppealUpheld(reason: AppealReason, questionText: string, questionId: string): boolean {
+    if (reason === AppealReason.Duplicate) {
+      return this.questions.some(
+        (q) => q.id !== questionId && wordOverlapRatio(q.text, questionText) >= APPEAL_DUPLICATE_SIMILARITY_THRESHOLD
+      );
+    }
+    return looksLikeOpenQuestion(questionText);
+  }
+
+  appealQuestion(playerId: string, questionId: string, reason: AppealReason): Ack<null> {
+    this.touch();
+    if (this.phase !== Phase.Playing) {
+      return { ok: false, error: err(ERROR_CODES.INVALID_PHASE, 'Сейчас нельзя подать аппеляцию.') };
+    }
+    if (!this.pendingQuestion || this.pendingQuestion.id !== questionId) {
+      return { ok: false, error: err(ERROR_CODES.NO_PENDING_QUESTION, 'Нет вопроса, ожидающего ответа.') };
+    }
+    if (this.pendingQuestion.authorId === playerId) {
+      return { ok: false, error: err(ERROR_CODES.NOT_RECIPIENT, 'Подать аппеляцию может только тот, кому задали вопрос.') };
+    }
+    if (this.appealLockedPlayerIds.has(playerId)) {
+      return {
+        ok: false,
+        error: err(ERROR_CODES.APPEAL_LOCKED, 'Функция аппеляции отключена для вас из-за частых необоснованных аппеляций.'),
+      };
+    }
+
+    const question = this.pendingQuestion;
+    const upheld = this.isAppealUpheld(reason, question.text, question.id);
+    question.appeal = { reason, upheld };
+    this.pendingQuestion = null;
+    // Turn deliberately stays with the asker (currentTurnPlayerId untouched) — an appeal
+    // means this exchange never happened, not that the appellant earns the next turn.
+
+    const stats = this.appealStats.get(playerId) ?? { total: 0, upheld: 0 };
+    stats.total += 1;
+    if (upheld) stats.upheld += 1;
+    this.appealStats.set(playerId, stats);
+    if (stats.total >= APPEAL_LOCK_MIN_ATTEMPTS && stats.upheld / stats.total < APPEAL_LOCK_MAX_UPHELD_RATE) {
+      this.appealLockedPlayerIds.add(playerId);
+    }
+
+    const appellant = this.findById(playerId);
+    if (appellant) {
+      gameLog.recordAppeal(randomUUID(), this.gameDbId, question.id, appellant.clientId, reason, upheld);
+    }
+
+    return { ok: true, data: null };
+  }
+
   finalGuess(playerId: string, cardId: string): Ack<{ correct: boolean }> {
     this.touch();
     if (this.phase !== Phase.Playing) {
@@ -322,6 +410,8 @@ export class Room {
     this.winnerId = null;
     this.revealedSecrets = null;
     this.rematchReadyPlayerIds.clear();
+    this.appealLockedPlayerIds.clear();
+    this.appealStats.clear();
 
     // A rematch is a new game row sharing the same room — lets "games played" count each
     // round while "games_log.room_id" still ties them back to one shared room/link.
@@ -352,6 +442,7 @@ export class Room {
       revealedSecrets: this.revealedSecrets,
       mySecretCardId: me?.secretCardId ?? null,
       rematchReadyPlayerIds: [...this.rematchReadyPlayerIds],
+      appealLockedPlayerIds: [...this.appealLockedPlayerIds],
     };
   }
 

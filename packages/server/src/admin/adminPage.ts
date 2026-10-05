@@ -90,6 +90,11 @@ function barChart(rows, labelKey, countKey, labelFormatter) {
     .join('');
 }
 
+const APPEAL_REASON_LABELS = {
+  duplicate: 'Такой вопрос уже был',
+  invalid: 'Вопрос некорректен',
+};
+
 function render(stats) {
   const totals = [
     ['Партий создано', stats.totals.games],
@@ -120,6 +125,26 @@ function render(stats) {
     '<tr><th>Средняя длительность</th><td>' + formatDuration(stats.duration.avgSeconds) + '</td></tr>' +
     '<tr><th>Медианная длительность</th><td>' + formatDuration(stats.duration.medianSeconds) + '</td></tr>' +
     '</tbody></table>' +
+    '</div>' +
+    '<div class="card"><h2>Аппеляции на вопросы</h2>' +
+    (stats.appeals.length
+      ? '<table><thead><tr><th>Причина</th><th>Всего</th><th>Признано обоснованной</th></tr></thead><tbody>' +
+        stats.appeals
+          .map(
+            (a) =>
+              '<tr><td>' +
+              escapeHtml(APPEAL_REASON_LABELS[a.reason] || a.reason) +
+              '</td><td>' +
+              a.count +
+              '</td><td>' +
+              a.upheldCount +
+              ' (' +
+              Math.round((a.upheldCount / a.count) * 100) +
+              '%)</td></tr>'
+          )
+          .join('') +
+        '</tbody></table>'
+      : '<p class="empty">Пока нет данных.</p>') +
     '</div>' +
     '</div>'
   );

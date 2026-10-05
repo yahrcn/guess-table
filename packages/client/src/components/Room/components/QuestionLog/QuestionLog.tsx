@@ -1,6 +1,13 @@
 import cx from 'classnames';
 import { useMemo } from 'react';
-import { getDeckCards, type DeckId, type FinalGuessEntry, type PlayerView, type QuestionEntry } from '@guess-table/shared';
+import {
+  APPEAL_REASON_LABELS,
+  getDeckCards,
+  type DeckId,
+  type FinalGuessEntry,
+  type PlayerView,
+  type QuestionEntry,
+} from '@guess-table/shared';
 import styles from './QuestionLog.module.css';
 
 interface Props {
@@ -46,7 +53,12 @@ export const QuestionLog = ({ deckId, questions, finalGuesses, players }: Props)
               <span className={styles.author}>{nameById.get(item.question.authorId) ?? 'Игрок'}:</span>{' '}
               {item.question.text}
             </span>
-            {item.question.answer === null ? (
+            {item.question.appeal ? (
+              <span className={cx(styles.answer, item.question.appeal.upheld ? styles.yes : styles.no)}>
+                Аппеляция «{APPEAL_REASON_LABELS[item.question.appeal.reason]}» —{' '}
+                {item.question.appeal.upheld ? 'принята' : 'отклонена'}
+              </span>
+            ) : item.question.answer === null ? (
               <span className={styles.waiting}>ожидание…</span>
             ) : (
               <span className={cx(styles.answer, item.question.answer ? styles.yes : styles.no)}>

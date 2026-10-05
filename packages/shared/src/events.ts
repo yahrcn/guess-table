@@ -1,4 +1,4 @@
-import type { DeckId, ErrorPayload, JoinSuccess, RoomSnapshot } from './types.js';
+import type { AppealReason, DeckId, ErrorPayload, JoinSuccess, RoomSnapshot } from './types.js';
 
 export interface AckOk<T> {
   ok: true;
@@ -33,6 +33,10 @@ export interface ClientToServerEvents {
     payload: { questionId: string; answer: boolean },
     cb: (ack: Ack<null>) => void
   ) => void;
+  'game:appealQuestion': (
+    payload: { questionId: string; reason: AppealReason },
+    cb: (ack: Ack<null>) => void
+  ) => void;
   'game:finalGuess': (
     payload: { cardId: string },
     cb: (ack: Ack<{ correct: boolean }>) => void
@@ -64,4 +68,5 @@ export const ERROR_CODES = {
   EMPTY_QUESTION: 'EMPTY_QUESTION',
   NOT_HOST: 'NOT_HOST',
   INVALID_DECK: 'INVALID_DECK',
+  APPEAL_LOCKED: 'APPEAL_LOCKED',
 } as const;

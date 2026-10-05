@@ -48,6 +48,7 @@ export const selectRoomViewModel = createSelector(
       isMyTurn: Boolean(snapshot && myPlayerId && snapshot.currentTurnPlayerId === myPlayerId),
       isPendingQuestionMine: Boolean(pendingQuestion && myPlayerId && pendingQuestion.authorId === myPlayerId),
       haveSelectedSecret: Boolean(snapshot?.mySecretCardId),
+      isAppealLocked: Boolean(snapshot && myPlayerId && snapshot.appealLockedPlayerIds.includes(myPlayerId)),
     };
   }
 );

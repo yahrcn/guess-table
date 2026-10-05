@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { Phase, type DeckId, type RoomSnapshot } from '@guess-table/shared';
+import { Phase, type AppealReason, type DeckId, type RoomSnapshot } from '@guess-table/shared';
 import { AsyncStatus } from '../../shared/types';
 import { createRoomState } from './factories';
 
@@ -75,6 +75,17 @@ const slice = createSlice({
       state.isSubmitting = false;
     },
     answerQuestionError(state, action: PayloadAction<{ message: string }>) {
+      state.isSubmitting = false;
+      state.actionError = action.payload.message;
+    },
+    appealQuestionBegin(state, _action: PayloadAction<{ questionId: string; reason: AppealReason }>) {
+      state.isSubmitting = true;
+      state.actionError = null;
+    },
+    appealQuestionSuccess(state) {
+      state.isSubmitting = false;
+    },
+    appealQuestionError(state, action: PayloadAction<{ message: string }>) {
       state.isSubmitting = false;
       state.actionError = action.payload.message;
     },

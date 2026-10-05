@@ -38,6 +38,18 @@ CREATE TABLE IF NOT EXISTS questions (
 );
 
 CREATE INDEX IF NOT EXISTS questions_normalized_text_idx ON questions (normalized_text);
+
+CREATE TABLE IF NOT EXISTS appeals (
+  id UUID PRIMARY KEY,
+  game_id UUID NOT NULL REFERENCES games (id) ON DELETE CASCADE,
+  question_id UUID NOT NULL,
+  appellant_client_id TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  upheld BOOLEAN NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS appeals_game_id_idx ON appeals (game_id);
 `;
 
 export async function runMigrations(): Promise<void> {

@@ -96,6 +96,17 @@ export function registerSocketHandlers(io: AppServer, roomManager: RoomManager):
       if (result.ok) broadcastRoom(room);
     });
 
+    socket.on('game:appealQuestion', (payload, cb) => {
+      const room = currentRoom();
+      if (!room || !state.playerId) {
+        cb(notInRoom());
+        return;
+      }
+      const result = room.appealQuestion(state.playerId, payload.questionId, payload.reason);
+      cb(result);
+      if (result.ok) broadcastRoom(room);
+    });
+
     socket.on('game:finalGuess', (payload, cb) => {
       const room = currentRoom();
       if (!room || !state.playerId) {
