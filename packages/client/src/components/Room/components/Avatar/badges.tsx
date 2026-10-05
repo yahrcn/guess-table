@@ -26,7 +26,11 @@ export type BadgeIcon =
   | 'speech'
   | 'ruler'
   | 'flask'
-  | 'star';
+  | 'star'
+  | 'musicalNote'
+  | 'laptop'
+  | 'book'
+  | 'knife';
 
 const INK = '#2b2118';
 
@@ -250,6 +254,37 @@ export function renderBadge(icon: BadgeIcon, cx: number, cy: number) {
       }
       return <polygon points={points.join(' ')} fill="#E3B13A" stroke={INK} strokeWidth="0.6" />;
     }
+    case 'musicalNote':
+      return (
+        <g fill={INK}>
+          <ellipse cx={cx - 4} cy={cy + 6} rx="3.6" ry="2.6" transform={`rotate(-20 ${cx - 4} ${cy + 6})`} />
+          <rect x={cx - 1.5} y={cy - 9} width="2" height="15" />
+          <path d={`M${cx - 1.5} ${cy - 9} q7 0 7 6 q-4 -2 -7 -1 Z`} />
+        </g>
+      );
+    case 'laptop':
+      return (
+        <g>
+          <rect x={cx - 8} y={cy - 7} width="16" height="10" rx="1" fill="#1C1C1C" />
+          <line x1={cx - 5} y1={cy - 4} x2={cx + 1} y2={cy - 4} stroke="#4CC9F0" strokeWidth="1.2" />
+          <line x1={cx - 5} y1={cy - 1} x2={cx + 4} y2={cy - 1} stroke="#4CC9F0" strokeWidth="1.2" />
+          <rect x={cx - 10} y={cy + 3} width="20" height="2.6" rx="1.3" fill={INK} />
+        </g>
+      );
+    case 'book':
+      return (
+        <g fill="#ffffff" stroke={INK} strokeWidth="1.2">
+          <path d={`M${cx} ${cy - 7} q-8 -3 -9 0 v13 q6 -2 9 1 Z`} />
+          <path d={`M${cx} ${cy - 7} q8 -3 9 0 v13 q-6 -2 -9 1 Z`} />
+        </g>
+      );
+    case 'knife':
+      return (
+        <g transform={`rotate(35 ${cx} ${cy})`}>
+          <path d={`M${cx - 9} ${cy} L${cx + 4} ${cy - 3} L${cx + 4} ${cy + 3} Z`} fill="#C9CDD3" stroke={INK} strokeWidth="0.8" />
+          <rect x={cx + 3} y={cy - 2} width="7" height="4" rx="1.4" fill="#5C4328" />
+        </g>
+      );
     default:
       return null;
   }

@@ -14,7 +14,9 @@ export type MediaIcon =
   | 'potion'
   | 'block'
   | 'ball'
-  | 'crosshair';
+  | 'crosshair'
+  | 'key'
+  | 'plane';
 
 /** One hand-drawn pictogram per icon, centered on (50,50) — no hashing, picked per title. */
 export function renderMediaIcon(icon: MediaIcon, accent: string, bg: string) {
@@ -137,6 +139,17 @@ export function renderMediaIcon(icon: MediaIcon, accent: string, bg: string) {
           <line x1="64" y1="50" x2="76" y2="50" />
         </g>
       );
+    case 'key':
+      return (
+        <g fill={accent}>
+          <circle cx="38" cy="50" r="12" fill="none" stroke={accent} strokeWidth="6" />
+          <rect x="48" y="47" width="28" height="6" rx="2" />
+          <rect x="64" y="53" width="6" height="8" />
+          <rect x="72" y="53" width="6" height="10" />
+        </g>
+      );
+    case 'plane':
+      return <path d="M20 56 L80 44 L58 50 L62 74 L50 58 L38 74 L42 50 Z" fill={accent} />;
     default:
       return null;
   }
