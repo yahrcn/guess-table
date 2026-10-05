@@ -8,7 +8,13 @@
 *.css text eol=crlf
 *.html text eol=crlf
 *.md text eol=crlf
+*.svg text eol=crlf
+*.txt text eol=crlf
+*.webmanifest text eol=crlf
 
 # Lock files are machine-regenerated (npm always writes LF) — leave line endings alone
 # so `npm install` doesn't fight with the CRLF rule above on every dependency change.
 package-lock.json -text
+
+# Generated raster images — binary, never touch line endings.
+*.png -text

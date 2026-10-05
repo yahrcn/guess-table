@@ -1,0 +1,21 @@
+{
+  "name": "Угадай персонажа",
+  "short_name": "Угадай персонажа",
+  "description": "Браузерная онлайн-игра «Угадай кто» на двоих — загадайте карточку, задавайте да/нет-вопросы и вычислите персонажа соперника.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f1ea",
+  "theme_color": "#e07a3e",
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

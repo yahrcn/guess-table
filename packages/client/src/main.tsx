@@ -4,7 +4,10 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './entries/App';
 import { store } from './config/store';
+import { absolutizeSeoTags } from './shared/helpers/seoHelpers';
 import './index.css';
+
+absolutizeSeoTags();
 
 const container = document.getElementById('root');
 if (!container) {
