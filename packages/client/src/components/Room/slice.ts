@@ -17,12 +17,19 @@ const slice = createSlice({
     },
     roomSnapshotReceived(state, action: PayloadAction<{ snapshot: RoomSnapshot }>) {
       const previousPhase = state.snapshot?.phase;
+      const previousRoomId = state.snapshot?.roomId;
       state.snapshot = action.payload.snapshot;
       state.joinStatus = AsyncStatus.Succeeded;
       state.joinError = null;
       // A rematch resets the same room from Finished back to Selecting — old exclusion
-      // marks from the previous game no longer apply to the new one.
-      if (previousPhase === Phase.Finished && action.payload.snapshot.phase === Phase.Selecting) {
+      // marks from the previous game no longer apply to the new one. Likewise, landing in
+      // a genuinely different room (e.g. "На главную" after a finished game, then creating
+      // a new one without a full page reload) must not carry over the old room's marks —
+      // this has to happen synchronously in the reducer, before persistExcludedCardIds'
+      // takeEvery(roomSnapshotReceived) saga can read (and re-persist) the stale value.
+      const isRematchReset = previousPhase === Phase.Finished && action.payload.snapshot.phase === Phase.Selecting;
+      const isDifferentRoom = previousRoomId !== undefined && previousRoomId !== action.payload.snapshot.roomId;
+      if (isRematchReset || isDifferentRoom) {
         state.excludedCardIds = [];
         state.ruledOutCardIds = [];
       }
