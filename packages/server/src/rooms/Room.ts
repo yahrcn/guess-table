@@ -278,7 +278,7 @@ export class Room {
     }
     this.pendingQuestion.answer = answer;
     this.pendingQuestion = null;
-    gameLog.recordQuestionAnswered(questionId, answer);
+    gameLog.recordQuestionAnswered(this.gameDbId, questionId, answer);
 
     // Turns alternate: whoever just answered asks next.
     this.currentTurnPlayerId = playerId;
