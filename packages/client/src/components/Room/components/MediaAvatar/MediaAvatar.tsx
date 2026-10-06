@@ -1,11 +1,11 @@
-import { getMediaDesign } from './mediaDesigns';
+import { getMediaDesign, type MediaDeckKind } from './mediaDesigns';
 import { renderMediaIcon } from './mediaIcons';
 
 interface Props {
   cardId: string;
   size?: number;
   title?: string;
-  variant: 'movie' | 'game';
+  variant: MediaDeckKind;
 }
 
 /**

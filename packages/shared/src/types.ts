@@ -13,6 +13,11 @@ export enum DeckId {
   Movies = 'movies',
   VideoGames = 'videoGames',
   Actors = 'actors',
+  Dishes = 'dishes',
+  Clothing = 'clothing',
+  SocialNetworks = 'socialNetworks',
+  Anime = 'anime',
+  Brands = 'brands',
 }
 
 export interface Card {

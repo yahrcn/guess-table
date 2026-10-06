@@ -19,6 +19,16 @@ function renderGenerated(deckId: DeckId, cardId: string, size: number | undefine
       return <MediaAvatar cardId={cardId} size={size} title={title} variant="movie" />;
     case DeckId.VideoGames:
       return <MediaAvatar cardId={cardId} size={size} title={title} variant="game" />;
+    case DeckId.Dishes:
+      return <MediaAvatar cardId={cardId} size={size} title={title} variant="dish" />;
+    case DeckId.Clothing:
+      return <MediaAvatar cardId={cardId} size={size} title={title} variant="clothing" />;
+    case DeckId.SocialNetworks:
+      return <MediaAvatar cardId={cardId} size={size} title={title} variant="social" />;
+    case DeckId.Anime:
+      return <MediaAvatar cardId={cardId} size={size} title={title} variant="anime" />;
+    case DeckId.Brands:
+      return <MediaAvatar cardId={cardId} size={size} title={title} variant="brand" />;
     case DeckId.Fictional:
     case DeckId.Celebrities:
     case DeckId.Professions:
